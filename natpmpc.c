@@ -96,9 +96,9 @@ void usage(FILE * out, const char * argv0)
         "\tadd a port mapping.\n"
         "\nOption available :\n"
         "  -g ipv4address\n"
-        "\tforce the gateway to be used as destination for NAT-PMP commands. (linux only)\n"
+        "\tforce the gateway to be used as destination for NAT-PMP commands.\n"
         "  -i interface\n"
-        "\tforce the interface to be used for sending NAT-PMP commands.\n"
+        "\tforce the interface to be used for sending NAT-PMP commands. (linux only)\n"
         "\n  In order to remove a mapping, set it with a lifetime of 0 seconds.\n"
         "  To remove all mappings for your machine, use 0 as private port and lifetime.\n", argv0, argv0, argv0);
 }
