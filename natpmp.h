@@ -148,7 +148,7 @@ extern "C" {
  * NATPMP_ERR_FCNTLERROR
  * NATPMP_ERR_CANNOTGETGATEWAY
  * NATPMP_ERR_CONNECTERR */
-NATPMP_LIBSPEC int initnatpmp(natpmp_t * p, int forcegw, in_addr_t forcedgw);
+NATPMP_LIBSPEC int initnatpmp(natpmp_t * p, int forcegw, in_addr_t forcedgw, int forceiface, const char* iface);
 
 /* closenatpmp()
  * close resources associated with a natpmp_t object

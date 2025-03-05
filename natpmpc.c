@@ -96,7 +96,9 @@ void usage(FILE * out, const char * argv0)
         "\tadd a port mapping.\n"
         "\nOption available :\n"
         "  -g ipv4address\n"
-        "\tforce the gateway to be used as destination for NAT-PMP commands.\n"
+        "\tforce the gateway to be used as destination for NAT-PMP commands. (linux only)\n"
+        "  -i interface\n"
+        "\tforce the interface to be used for sending NAT-PMP commands.\n"
         "\n  In order to remove a mapping, set it with a lifetime of 0 seconds.\n"
         "  To remove all mappings for your machine, use 0 as private port and lifetime.\n", argv0, argv0, argv0);
 }
@@ -127,6 +129,8 @@ int main(int argc, char * * argv)
 	int command = 0;
 	int forcegw = 0;
 	in_addr_t gateway = 0;
+	int forceiface = 0;
+	const char* iface = NULL;
 	struct in_addr gateway_in_use;
 
 #ifdef _WIN32
@@ -153,6 +157,14 @@ int main(int argc, char * * argv)
 					return 1;
 				}
 				gateway = inet_addr(argv[++i]);
+				break;
+			case 'i':
+				if(argc < i + 1) {
+					fprintf(stderr, "Not enough arguments for option -%c\n", argv[i][1]);
+					return 1;
+				}
+				forceiface = 1;
+				iface = argv[++i];
 				break;
 			case 'a':
 				command = 'a';
@@ -200,7 +212,7 @@ int main(int argc, char * * argv)
 	}
 
 	/* initnatpmp() */
-	r = initnatpmp(&natpmp, forcegw, gateway);
+	r = initnatpmp(&natpmp, forcegw, gateway, forceiface, iface);
 	printf("initnatpmp() returned %d (%s)\n", r, r?"FAILED":"SUCCESS");
 	if(r<0)
 		return 1;

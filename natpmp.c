@@ -55,13 +55,14 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <net/if.h>
 #define closesocket close
 #endif
 #include "natpmp.h"
 #include "getgateway.h"
 #include <stdio.h>
 
-NATPMP_LIBSPEC int initnatpmp(natpmp_t * p, int forcegw, in_addr_t forcedgw)
+NATPMP_LIBSPEC int initnatpmp(natpmp_t * p, int forcegw, in_addr_t forcedgw, int forceiface, const char* iface)
 {
 #ifdef _WIN32
 	u_long ioctlArg = 1;
@@ -75,6 +76,20 @@ NATPMP_LIBSPEC int initnatpmp(natpmp_t * p, int forcegw, in_addr_t forcedgw)
 	p->s = socket(PF_INET, SOCK_DGRAM, 0);
 	if(p->s < 0)
 		return NATPMP_ERR_SOCKETERROR;
+
+#ifndef _WIN32
+	if (forceiface) {
+		printf("Binding to interface %s\n", iface);
+
+		const struct ifreq ifr = {};
+		strncpy((char * restrict) ifr.ifr_name, iface, IFNAMSIZ);
+
+		if (setsockopt(p->s, SOL_SOCKET, SO_BINDTODEVICE, &ifr, sizeof(ifr)) < 0) {
+			return NATPMP_ERR_SOCKETERROR;
+		}
+	}
+#endif
+
 #ifdef _WIN32
 	if(ioctlsocket(p->s, FIONBIO, &ioctlArg) == SOCKET_ERROR)
 		return NATPMP_ERR_FCNTLERROR;
